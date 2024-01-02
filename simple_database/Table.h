@@ -10,6 +10,10 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #define COLUMN_USERNAME_SIZE 32
 #define COLUMN_EMAIL_SIZE 255
@@ -19,13 +23,19 @@
 
 typedef struct Row {
     uint32_t id;
-    char username[COLUMN_USERNAME_SIZE];
-    char email[COLUMN_EMAIL_SIZE];
+    char username[COLUMN_USERNAME_SIZE + 1];
+    char email[COLUMN_EMAIL_SIZE + 1];
 } Row;
 
-typedef struct Table{
-    uint32_t num_rows;
+typedef struct Pager {
+    int file_descriptor;
+    uint32_t file_length;
     void* pages[TABLE_MAX_PAGES];
+} Pager;
+
+typedef struct Table{
+    Pager* pager;
+    uint32_t num_rows;
 } Table;
 
 extern const uint32_t ID_SIZE;
@@ -43,8 +53,12 @@ void serialize_row(Row* source, void* destination);
 void deserialize_row(void* source, Row* destination);
 void print_row(Row* row);
 
+Pager* pager_open(const char* filename);
+void* get_page(Pager* pager, uint32_t page_num);
+void pager_flush(Pager* pager, uint32_t page_num, uint32_t size);
+
 void* row_slot(Table* table, uint32_t row_num);
-Table* new_table();
-void free_table(Table* table);
+Table* db_open(const char* filename);
+void db_close(Table* table);
 
 #endif /* Table_h */

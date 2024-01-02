@@ -13,9 +13,17 @@
 #include "InputBuffer.h"
 #include "Keywords.h"
 
-int main(int argc, const char * argv[]) {
+int main(int argc, char * argv[]) {
     // insert code here...
-    Table* table = new_table();
+    
+    if (argc < 2) {
+        printf("Must supply a database filename.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    char* filename = argv[1];
+    Table* table = db_open(filename);
+    
     InputBuffer* input_buffer = new_input_buffer();
     
     while (true) {
@@ -39,6 +47,12 @@ int main(int argc, const char * argv[]) {
                 break;
             case (PREPARE_SYNTAX_ERROR):
                 printf("Syntax error. Could not parse statement.\n");
+                continue;
+            case (PREPARE_NEGATIVE_ID):
+                printf("ID must be positive.\n");
+                continue;
+            case (PREPARE_STRING_TOO_LONG):
+                printf("String is too long.\n");
                 continue;
             case (PREPARE_UNRECOGNIZED_STATEMENT):
                 printf("Unrecognized keyword at start of '%s'.\n", input_buffer->buffer);

@@ -12,6 +12,7 @@
 
 #include "InputBuffer.h"
 #include "Table.h"
+#include "Cursor.h"
 
 #define COLUMN_USERNAME_SIZE 32
 #define COLUMN_EMAIL_SIZE 255
@@ -29,6 +30,8 @@ typedef enum MetaCommandResult{
 typedef enum PrepareResult{
     PREPARE_SUCCESS,
     PREPARE_SYNTAX_ERROR,
+    PREPARE_NEGATIVE_ID,
+    PREPARE_STRING_TOO_LONG,
     PREPARE_UNRECOGNIZED_STATEMENT
 } PrepareResult;
 
